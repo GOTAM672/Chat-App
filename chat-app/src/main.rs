@@ -3,7 +3,9 @@
 
 
 use rocket::tokio::sync::broadcast::{channel};
-
+use rocket::tokio::sync::broadcast::{channel, Sender, error::RecvError};
+use rocket::form::Form;
+use rocket::serde::{Serialize, Deserialize};
 
 #[get("/world")]   // get request to world path
 
@@ -27,6 +29,17 @@ struct Message{
      pub message: String,
 }
 
+// Implementing end points
+
+/* post messages */
+
+#[post("/message", data = "<form>")]
+fn post(form: Form<Message>, Queue: &State<Sender<Message>>) {
+
+         let _res = queue.send(form.into_inner());
+}
+
+
 #[launch]
 
 fn rocket() -> _ {
@@ -35,3 +48,4 @@ fn rocket() -> _ {
           .mount("/hello", routes![world])         // To create new rocket server instance and mount the route.
 }
                 
+
