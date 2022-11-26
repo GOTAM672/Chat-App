@@ -10,11 +10,6 @@ use rocket::serde::{Serialize, Deserialize};
 #[get("/world")]   // get request to world path
 
 
-// handler function
-fn world() -> &'static str {
-     "Hello, world!"
-}
-
 #[derive(Debug, Clone, FromForm, Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 
