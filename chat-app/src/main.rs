@@ -7,7 +7,6 @@ use rocket::tokio::sync::broadcast::{channel, Sender, error::RecvError};
 use rocket::form::Form;
 use rocket::serde::{Serialize, Deserialize};
 
-#[get("/world")]   // get request to world path
 
 
 #[derive(Debug, Clone, FromForm, Serialize, Deserialize)]
@@ -38,7 +37,7 @@ fn post(form: Form<Message>, Queue: &State<Sender<Message>>) {
 
 #[get("/events")]
 async fn events(queue: &State<Sender<Message>>, mut end: Shutdown) -> EventStream![] {
-    let mut rx = queue.subscribe();
+    let mut rx = queue.subscribe();   // To create new receiver
     EventStream! {
         loop {
             let msg = select! {
@@ -59,8 +58,9 @@ async fn events(queue: &State<Sender<Message>>, mut end: Shutdown) -> EventStrea
 
 fn rocket() -> _ {
       rocket::build() 
-          .manage(channet::<Message>(1024).0)       // The manage method allows to add state to our rocket server instance
-          .mount("/hello", routes![world])         // To create new rocket server instance and mount the route.
+          .manage(channet::<Message>(1024).0)
+          .mount("/", routes![post, events])
+          .mount("/", FileServer::from(relative!("static")))
 }
                 
 
